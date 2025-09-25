@@ -6,7 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 
 const AllProducts = () => {
 
-    const { products } = useAppContext();
+    const { products} = useAppContext();
 
     return (
         <>

@@ -7,8 +7,7 @@ const NewsLetter = () => {
         Subscribe now & get 20% off
       </h1>
       <p className="md:text-base text-gray-500/80 pb-8">
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry.
+        Easy access, user friendly one stop for all electronic gadget shopping
       </p>
       <div className="flex items-center justify-between max-w-2xl w-full md:h-14 h-12">
         <input
