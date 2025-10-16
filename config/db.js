@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config()
 
 let cached = global.mongoose
 
@@ -8,6 +10,7 @@ if(!cached) {
 
 async function ConnectDB() {
     if ( cached.conn ) {
+        console.log ("Using cached database connection");
         return cached.conn
     }
 
@@ -15,9 +18,13 @@ async function ConnectDB() {
         const opts = {
             bufferCommands: false,
         }
-
-        cached.promise = mongoose.connect(`${process.env.MONGODB_URI}/QuickCart`, opts).then( (mongoose) => {
+        
+        console.log("Connecting to database connection");
+        cached.promise = mongoose.connect(`${process.env.MONGODB_URI}`, opts).then( (mongoose) => {
             return mongoose
+        }).catch ((error)=>{
+            console.error("connection failed", error.message);
+            throw error;
         })
          cached.conn = await cached.promise
          return cached.conn
