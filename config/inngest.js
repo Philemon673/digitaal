@@ -9,12 +9,12 @@ export const inngest = new Inngest({ id: "digitaal" });
 // inngest function to save user data to database
 export const syncUserCreation = inngest.createFunction(
     {
-       id: "sync-user-from clerk",
+       id: "sync-user-from-clerk"
     },
     {
-        event: " clerk/user.created"
+        event: "clerk/user.created"
     },
-    async ({ event }) =>{
+    async ({event}) =>{
         const { id, first_name, last_name, email_addresses, image_url } = event.data;
         //object to collect user data to be saved to database
         const userData = {
@@ -45,7 +45,7 @@ export const syncUserUpdation = inngest.createFunction(
             imageUrl: image_url,
         }
         await ConnectDB();
-        await User.findByIdAndUpdate(id, userData)
+        await User.findByIdAndUpdate(id,userData)
     }
 ) 
 //inngest function for delete user from the database
@@ -58,7 +58,7 @@ export const syncUserDeletion = inngest.createFunction(
     },
     async({event}) => {
         //object to collect user data to be saved to database
-        const { id } = event.data;
+        const {id } = event.data;
 
         await ConnectDB();
         await User.findByIdAndDelete(id)
