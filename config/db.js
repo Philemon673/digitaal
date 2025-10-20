@@ -20,7 +20,7 @@ async function ConnectDB() {
         }
         
         console.log("Connecting to database connection");
-        cached.promise = mongoose.connect(`${process.env.MONGODB_URI}`, opts).then( (mongoose) => {
+        cached.promise = mongoose.connect(`${process.env.MONGODB_URI}/Digitaal`, opts).then( (mongoose) => {
             return mongoose
         }).catch ((error)=>{
             console.error("connection failed", error.message);
