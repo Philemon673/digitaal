@@ -4,8 +4,7 @@ import User from "@/models/user";
 import Order from "@/models/order";
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ id: "digitaal-next",
-    name: "digitaal-next",
+export const inngest = new Inngest({ id: "quickcard-next"
  });
 
 // inngest function to save user data to database
