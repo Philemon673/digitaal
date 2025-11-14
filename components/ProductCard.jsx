@@ -13,7 +13,7 @@ const ProductCard = ({ product }) => {
     if (typeof window !== "undefined") window.scrollTo(0, 0);
   };
 
-  const imageSrc = product?.images?.[0] || '/placeholder.png';
+  const imageSrc = product?.image?.[0] || '/placeholder.png';
 
   return (
     <div
