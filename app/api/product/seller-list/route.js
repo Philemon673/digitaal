@@ -1,23 +1,16 @@
-import ConnectDB from "@/config/db"
-import authSeller from "@/lib/authSeller"
-import Product from "@/models/product"
-import { getAuth } from "@clerk/nextjs/server"
-import { NextResponse } from "next/server"
+import ConnectDB from "@/config/db";
+import Product from "@/models/product";
+import { NextResponse } from "next/server";
 
+export async function GET() {
+  try {
+    await ConnectDB();
 
-export async function GET(request){
-    try {
-        const { userId } = getAuth(request)
-        const isSeller = authSeller(userId)
-        if(!isSeller){
-           return NextResponse.json({ success: false, message: " Not Authorized" })
-        }
-        await ConnectDB()
+    const products = await Product.find({}).sort({ date: -1 }); // optional: newest first
 
-        const product = await Product.find({})
-        return NextResponse.json({ success: true, product })
-        
-    } catch (error) {
-        return NextResponse.json({ success: false, message: error.message })
-    }
+    return NextResponse.json({ success: true, products });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json({ success: false, message: error.message });
+  }
 }

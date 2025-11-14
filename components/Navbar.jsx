@@ -29,10 +29,10 @@ const Navbar = () => {
         <Link href="/all-products" className={`transition ${pathname === '/all-products' ? "text-orange-600 font-semibold" :"hover:text-gray-900 transition"}`}>
           Shop
         </Link>
-        <Link href="/" className={`transiton ${pathname === '/' ? "text-orange-600 font-semibold" : "hover:text-gray-900 transition"}`}>
+        <Link href="/about-us" className={`transiton ${pathname === '/about-us' ? "text-orange-600 font-semibold" : "hover:text-gray-900 transition"}`}>
           About Us
         </Link>
-        <Link href="/" className={`transition ${pathname === '/' ? "text-orange-600 font-semibold" :"hover:text-gray-900 transition"}`}>
+        <Link href="/contact" className={`transition ${pathname === '/contact' ? "text-orange-600 font-semibold" :"hover:text-gray-900 transition"}`}>
           Contact
         </Link>
 

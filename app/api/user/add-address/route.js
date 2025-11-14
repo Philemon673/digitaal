@@ -3,19 +3,24 @@ import Address from "@/models/address";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+export async function POST(request) {
+  try {
+    const { userId } = getAuth(request);
+    // only logged in user can add address
+    const { address } = await request.json();
 
+    await ConnectDB();
+    const newAddress = await Address.create({ ...address, userId });
 
-
-export async function Post(request){
-    try {
-        const { userId } = getAuth(request)
-        // only logged in user can add address
-        const {address} = await request.json()
-
-        await ConnectDB()
-        const newAddress = await Address.create({...address, userId})
-        return NextResponse.json({success: true, message: "Address added successfully", newAddress})
-    } catch (error) {
-        return NextResponse.json({success: false, message: error.message})
-    }
+    return NextResponse.json({
+      success: true,
+      message: "Address added successfully",
+      newAddress,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      message: error.message,
+    });
+  }
 }

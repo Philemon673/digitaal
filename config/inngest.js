@@ -4,22 +4,22 @@ import User from "@/models/user";
 import Order from "@/models/order";
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ id: "quickcart-next"
+export const inngest = new Inngest({ id:"quickcart-next"
  });
 
 // inngest function to save user data to database
 export const syncUserCreation = inngest.createFunction(
     {
-       id: "sync-user-from-clerk"
+       id:"sync-user-from-clerk"
     },
     {
-        event: "clerk/user.created"
+        event:"clerk/user.created"
     },
     async ({event}) =>{
         const { id, first_name, last_name, email_addresses, image_url } = event.data;
         //object to collect user data to be saved to database
         const userData = {
-            _id: id,
+            clerkId: id,
             email: email_addresses[0].email_address,
             name: `${first_name} ${last_name}`,
             imageUrl: image_url,
@@ -31,10 +31,10 @@ export const syncUserCreation = inngest.createFunction(
 // inngest function to update user data in database
 export const syncUserUpdation = inngest.createFunction(
     {
-        id: 'update-user-from-clerk'
+        id:'update-user-from-clerk'
     },
     {
-        event: 'clerk/user.updated'
+        event:'clerk/user.updated'
     },
     async({event}) => {
          const { id, first_name, last_name, email_addresses, image_url } = event.data;
@@ -52,10 +52,10 @@ export const syncUserUpdation = inngest.createFunction(
 //inngest function for delete user from the database
 export const syncUserDeletion = inngest.createFunction(
     {
-        id: 'delete-user-with-clerk'
+        id:'delete-user-with-clerk'
     },
     {
-        event: 'clerk/user.delete'
+        event:'clerk/user.delete'
     },
     async({event}) => {
         //object to collect user data to be saved to database
@@ -65,25 +65,25 @@ export const syncUserDeletion = inngest.createFunction(
         await User.findByIdAndDelete(id)
     }
 )
-//innegest function to create order in the database
+//innegest function to create user's order in the database using the batching process
 export const createUserOrder = inngest.createFunction(
     {
-        id: 'create-user-order',
+        id:'create-user-order',
         batchEvents: {
             maxSize: 5,
             timeout: '5s'
         }
     },
-    { event: 'order/created'},
+    { event:'order/created'},
     async({events}) => {
 
         const orders = events.map((event) => {
             return{
-                userId: event.data.userId,
-                items: event.data.items,
-                amount: event.data.amount,
-                address: event.data.address,
-                date: event.data.date
+                userId:event.data.userId,
+                items:event.data.items,
+                amount:event.data.amount,
+                address:event.data.address,
+                date:event.data.date
             }
         })
 
