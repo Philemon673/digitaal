@@ -44,12 +44,12 @@ export default function ContactPage() {
 
             <div className="flex items-center gap-4">
               <Phone className="w-6 h-6 text-orange-500" />
-              <p className="text-gray-300">+1 (800) 123-4567</p>
+              <p className="text-gray-300">673-069-415</p>
             </div>
 
             <div className="flex items-center gap-4">
               <MapPin className="w-6 h-6 text-orange-500" />
-              <p className="text-gray-300">Accra, Ghana</p>
+              <p className="text-gray-300">Buea, Cameroon</p>
             </div>
           </div>
         </div>

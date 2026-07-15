@@ -13,11 +13,16 @@ const OrderSummary = () => {
     user,
     cartItem,
     setCartItem,
+    products,
   } = useAppContext();
 
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
+
+  // Payment Popup States
+  const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("WhatsApp Messaging");
 
   // Fetch user addresses
   const fetchUserAddresses = async () => {
@@ -45,10 +50,24 @@ const OrderSummary = () => {
     setIsDropdownOpen(false);
   };
 
+  // Handle Place Order Click (Validates before opening popup)
+  const handlePlaceOrderClick = () => {
+    if (!selectedAddress) return toast.error("Please select an address");
+
+    let cartItemArray = Object.keys(cartItem)
+      .map((key) => ({ product: key, quantity: cartItem[key] }))
+      .filter((item) => item.quantity > 0);
+
+    if (cartItemArray.length === 0)
+      return toast.error("Your cart is empty");
+
+    setIsPaymentPopupOpen(true);
+  };
+
   // Create order
   const createOrder = async () => {
     try {
-      if (!selectedAddress) return toast.error("Please select an address");
+      setIsPaymentPopupOpen(false);
 
       let cartItemArray = Object.keys(cartItem)
         .map((key) => ({ product: key, quantity: cartItem[key] }))
@@ -70,6 +89,22 @@ const OrderSummary = () => {
       if (data.success) {
         toast.success(data.message);
         setCartItem({});
+
+        // Handle post-order messaging redirects
+        const firstProductId = Object.keys(cartItem).find(key => cartItem[key] > 0);
+        const firstProduct = products.find(p => p._id === firstProductId);
+
+        if (selectedPaymentMethod === "WhatsApp Messaging") {
+          const sellerPhone = firstProduct?.sellerPhone || "652126538"; // Fallback to dummy if seller has no phone
+          const message = encodeURIComponent(`Hello! I'm interested in purchasing your product. I'd like to proceed with a direct payment. Could you please confirm that the item is still available and share your preferred payment method and any relevant payment details? Once I receive the information, I'll review it and complete the payment if everything is in order. Thank you, and I look forward to your response!`);
+          window.open(`https://wa.me/${sellerPhone}?text=${message}`, "_blank");
+        } else if (selectedPaymentMethod === "Email") {
+          const sellerEmail = firstProduct?.sellerEmail || "fuadochris@gmail.com";
+          const subject = encodeURIComponent("New Order Placed");
+          const body = encodeURIComponent(`Hello! I'm interested in purchasing your product. I'd like to proceed with a direct payment. Could you please confirm that the item is still available and share your preferred payment method and any relevant payment details? Once I receive the information, I'll review it and complete the payment if everything is in order. Thank you, and I look forward to your response!`);
+          window.location.href = `mailto:${sellerEmail}?subject=${subject}&body=${body}`;
+        }
+
         router.push("/order-placed");
       } else {
         toast.error(data.message);
@@ -109,9 +144,8 @@ const OrderSummary = () => {
                   : "Select Address"}
               </span>
               <svg
-                className={`w-5 h-5 inline float-right transition-transform duration-200 ${
-                  isDropdownOpen ? "rotate-0" : "-rotate-90"
-                }`}
+                className={`w-5 h-5 inline float-right transition-transform duration-200 ${isDropdownOpen ? "rotate-0" : "-rotate-90"
+                  }`}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -199,11 +233,50 @@ const OrderSummary = () => {
       </div>
 
       <button
-        onClick={createOrder}
+        onClick={handlePlaceOrderClick}
         className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700"
       >
         Place Order
       </button>
+
+      {/* Payment Method Popup */}
+      {isPaymentPopupOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <h3 className="text-xl font-medium text-gray-800 mb-4">Select Contact / Payment Method</h3>
+            <div className="space-y-3 mb-6">
+              {['WhatsApp Messaging', 'Email', 'Credit/Debit Card', 'PayPal'].map((method) => (
+                <label key={method} className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={method}
+                    checked={selectedPaymentMethod === method}
+                    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                    className="w-4 h-4 text-orange-600 accent-orange-600"
+                  />
+                  <span className="text-gray-700">{method}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsPaymentPopupOpen(false)}
+                className="flex-1 py-2.5 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createOrder}
+                className="flex-1 py-2.5 bg-orange-600 text-white rounded hover:bg-orange-700 transition"
+              >
+                Confirm Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

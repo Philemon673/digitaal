@@ -1,17 +1,32 @@
 "use client"
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { assets, BagIcon, BoxIcon, CartIcon, HomeIcon } from "@/assets/assets";
 import Link from "next/link"
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation"
+
 const Navbar = () => {
 
   const { isSeller, router, user } = useAppContext();
 
   const { openSignIn } = useClerk()
   const pathname = usePathname()
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.trim()) {
+        router.push(`/all-products?search=${encodeURIComponent(searchQuery)}`);
+      } else if (pathname === '/all-products') {
+        router.push(`/all-products`);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, pathname, router]);
+
 
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700">
@@ -41,7 +56,18 @@ const Navbar = () => {
       </div>
 
       <ul className="hidden md:flex items-center gap-4 ">
-        <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
+        <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2 border border-gray-300 rounded-full px-3 py-1">
+          <input 
+            type="text" 
+            placeholder="Search products..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="outline-none bg-transparent text-sm w-32"
+          />
+          <button type="submit">
+            <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
+          </button>
+        </form>
         {
           user
             ? <>

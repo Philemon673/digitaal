@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    phone: {
+      type: String,
+      default: "",
+    },
+
     imageUrl: {
       type: String,
       default: "",
